@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
-
+import webbrowser
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
 
@@ -68,6 +68,7 @@ def main():
     port = 8000  # Change port if needed
     httpd = HTTPServer(('', port), MyHandler)
     print(f"Serving at port {port}")
+    webbrowser.open('http://localhost:8000/')
     httpd.serve_forever()
 
 if __name__ == '__main__':
