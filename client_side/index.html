@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Fish Gurd</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+<head>
+  <meta charset="UTF-8">
+  <title>Fish Gurd</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
 
-  </head>
-
-  <body>
-    <center><div class="container">  <h1>Web Name Here:</h1>
-      <form action="/submit" method="POST">
-        <input type="text" name="text" placeholder="Enter your text here">
+<body>
+  <center>
+    <div class="container">
+      <h1>Web Name Here:</h1>
+      <form action="/submit" method="POST" style="display: flex; justify-content: center; align-items: center;">
+        <input type="text" name="text" placeholder="Enter your text here" style="text-align: center;">
         <button type="submit">Submit</button>
       </form>
-    </div></center>
-    <center><img src="./FishLogo2.jpg" alt="logo" width="500" height="500"></center>
-    <video width="320" height="340" autoplay muted controls loop>
-      <source src="safty.mp4" type="video/mp4">
-      alt = "no"
-      </video>
+    </div>
+  </center>
+  
+  <center><img src="./FishLogo2.jpg" alt="logo" width="500" height="500"></center>
 
-    </body>
+  <center>
+    <div class="container">
+      <h3>server ip:</h3>
+      <form action="/serverIP" method="POST" style="display: flex; justify-content: center; align-items: center;">
+        <input type="text" name="text" placeholder="enter the server ip" style="text-align: center;">
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </center>
+
+
+  <video width="320" height="340" autoplay muted controls loop>
+    <source src="safty.mp4" type="video/mp4">
+    alt="no"
+  </video>
+
+</body>
 </html>
