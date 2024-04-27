@@ -1,9 +1,38 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import webbrowser
+import socket
+import rsa
+import pickle
+
+
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
-
+class ServerHundeler:
+    def ServerHundeler(self,serverIP):
+        self.serverIP = serverIP
+    def checkSite(self,site):
+        client = socket.socket()
+        try:
+            client.connect((f'{self.serverIP}', 1729))
+        except:
+            return '404 server not found'
+        publicKey = pickle.load(client.recv(1024).decode())
+        encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
+        client.sendall(f"{encodedMes }".encode())
+        response = client.recv(1024).decode()
+        if response == 'good':
+            try:
+                webbrowser.open(f'http://{site}')
+                return 1
+            except:
+                return '404 not found'
+        elif response == 'malwer':
+            return -1
+        else:
+            return 'unknown'
+        
+        
 class MyHandler(BaseHTTPRequestHandler):
     """
     Custom handler for handling HTTP requests.
