@@ -9,7 +9,7 @@ import pickle
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
 class ServerHundeler:
-    def ServerHundeler(self,serverIP):
+    def __init__(self,serverIP):
         self.serverIP = serverIP
     def checkSite(self,site):
         client = socket.socket()
@@ -102,10 +102,45 @@ class MyHandler(BaseHTTPRequestHandler):
             print(f"Received text: {submitted_text}")
 
             # Send a simple response (you can customize this)
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(f"Form submitted successfully! You entered: {submitted_text}".encode())
+            try:
+                response = self.checkServer.checkSite(submitted_text)
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                if response == 1:
+                    self.wfile.write(f"the web page {submitted_text} is ok".encode())
+                elif response == -1:
+                    self.wfile.write(f"the web page {submitted_text} is not safe, and probebly contain malwer. \n enter at your own risk".encode())
+                elif response == '404 server not found':
+                    self.send_error(404, 'Server Not Found.\n try insert ip agin')
+                elif response == '404 not found':
+                    self.send_error(404, 'Web page Not Found.\n try insert name agin')
+                elif response == 'unknown':
+                    self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk".encode())
+                    
+            except:
+                self.send_error(404, 'Server/web page Not Found')
+                
+        elif self.path == '/serverIP':
+            # Read the form data from POST request body
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode()
+
+            # Extract the submitted text from form data
+            form_data = dict(item.split('=') for item in post_data.split('&'))
+            submitted_text = form_data.get('text')
+
+            # Process the submitted text (e.g., print it)
+            print(f"Received text: {submitted_text}")
+            try:
+                self.checkServer = ServerHundeler(submitted_text)
+                # Send a simple response (you can customize this)
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(f"successfully entered ip adress! You entered: {submitted_text}".encode())
+            except:
+                self.send_error(404, 'Not Found')
         else:
             # Handle invalid POST requests (404 Not Found)
             self.send_error(404, 'Not Found')
