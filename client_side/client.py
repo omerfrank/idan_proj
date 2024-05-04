@@ -17,7 +17,7 @@ class ServerHundeler:
             client.connect((f'{self.serverIP}', 1729))
         except:
             return '404 server not found'
-        publicKey = pickle.load(client.recv(1024).decode())
+        publicKey = pickle.loads(client.recv(1024))
         encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
         client.sendall(f"{encodedMes }".encode())
         response = client.recv(1024).decode()

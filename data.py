@@ -23,7 +23,7 @@ def objB(cursor):
         print(primary_key)
 
 def objC(cursor):
-    cursor.execute("SELECT * FROM URL")
+    cursor.execute("SELECT * FROM Site")
     rows = cursor.fetchall()
     print(rows)
 def objD(cursor):

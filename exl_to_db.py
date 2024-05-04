@@ -16,7 +16,7 @@ except FileNotFoundError:
   exit()
 
 # Assign a name to the DataFrame (optional)
-table_name = "URL"  # Replace with your preferred name
+table_name = "Site"  # Replace with your preferred name
 df = df.copy()  # Optional: Create a copy to avoid modifying the original DataFrame
 df.name = table_name
 
@@ -28,8 +28,7 @@ CREATE TABLE IF NOT EXISTS {table_name} (
 );
 """
 
-# Execute the CREATE TABLE statement
-#conn.execute(create_table_sql)
+
 
 # Insert DataFrame data into the table
 df.to_sql(table_name, conn, index=False)
