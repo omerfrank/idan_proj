@@ -8,9 +8,10 @@ import pickle
 
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
-class ServerHundeler:
+class ServerHandler:
     def __init__(self,serverIP):
         self.serverIP = serverIP
+        print("init ----")
     def checkServer(self):
         client = socket.socket()
         try:
@@ -32,13 +33,13 @@ class ServerHundeler:
         encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
         client.sendall(f"{encodedMes }".encode())
         response = client.recv(1024).decode()
-        if response == 'good':
+        if response == 'Good':
             try:
                 webbrowser.open(f'http://{site}')
                 return 1
             except:
-                return '404 not found'
-        elif response == 'malwer':
+                return '404 site found'
+        elif response == 'Mal':
             return -1
         else:
             return 'unknown'
@@ -114,7 +115,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
             # Send a simple response (you can customize this)
             try:
-                response = self.checkServer.checkSite(submitted_text)
+                response = self.server.ServerHandel.checkSite(submitted_text)
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain')
                 self.end_headers()
@@ -130,7 +131,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk".encode())
                     
             except:
-                self.send_error(404, 'Server/web page Not Found')
+                self.send_error(404, f'Server/web page Not Found, server ip {self.server.ServerHandel.serverIP}')
                 
         elif self.path == '/serverIP':
             # Read the form data from POST request body
@@ -144,9 +145,11 @@ class MyHandler(BaseHTTPRequestHandler):
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
             try:
-                self.ServerHandel = ServerHundeler(submitted_text)
+                #self.ServerHandel = ServerHandler(submitted_text)
+                self.server.ServerHandel = ServerHandler(submitted_text)
+                print ("xxxxxx \n " + self.server.ServerHandel.serverIP)
                 # Send a simple response (you can customize this)
-                if self.ServerHandel.checkServer() == 'ok':
+                if self.server.ServerHandel.checkServer() == 'ok':
                     self.send_response(200)
                     self.send_header('Content-Type', 'text/plain')
                     self.end_headers()

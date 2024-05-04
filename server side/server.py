@@ -20,12 +20,11 @@ def handleClients(client):
     Keys = rsa.newkeys(1024)
     publicKey = Keys[0]
     privateKey = Keys[1]
-    client = socket.socket()
-    client.connect()
     client.send(f'{pickle.dumps(publicKey)}')
     url = rsa.decrypt(bytes(client.recv(1024),'utf-8') ,privateKey)
     if checkURL(url):
-        return -1
+        client.sendall('Mal')
+        return 
     while True:
         try:
            conn = sqlite3.connect(r'server side\\URL_database.db') 
@@ -37,6 +36,7 @@ def handleClients(client):
            except:
                client.sendall('404 not found'.encode())
            client.close()
+           return
         except:
             time.sleep(0.2)
 
@@ -50,6 +50,7 @@ while True:
                 print('new client')
                 c.close()
             else:
+                c.recv(1024)
                 t = threading.Thread(target=handleClients,args=[c])
                 t.start()  
 
