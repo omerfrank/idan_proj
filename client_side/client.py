@@ -11,12 +11,23 @@ STATIC_DIR = 'static'
 class ServerHundeler:
     def __init__(self,serverIP):
         self.serverIP = serverIP
+    def checkServer(self):
+        client = socket.socket()
+        try:
+            client.connect((f'{self.serverIP}', 1729))
+        except:
+            client.close()
+            return '404 server not found'
+        client.sendall('new'.encode())
+        client.close()
+        return 'ok'
     def checkSite(self,site):
         client = socket.socket()
         try:
             client.connect((f'{self.serverIP}', 1729))
         except:
             return '404 server not found'
+        client.sendall('check'.encode())
         publicKey = pickle.loads(client.recv(1024))
         encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
         client.sendall(f"{encodedMes }".encode())
@@ -133,14 +144,17 @@ class MyHandler(BaseHTTPRequestHandler):
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
             try:
-                self.checkServer = ServerHundeler(submitted_text)
+                self.ServerHandel = ServerHundeler(submitted_text)
                 # Send a simple response (you can customize this)
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain')
-                self.end_headers()
-                self.wfile.write(f"successfully entered ip adress! You entered: {submitted_text}".encode())
+                if self.ServerHandel.checkServer() == 'ok':
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/plain')
+                    self.end_headers()
+                    self.wfile.write(f"successfully entered ip adress! You entered: {submitted_text}".encode())
+                else:
+                    self.send_error(404, 'Server Not Found')
             except:
-                self.send_error(404, 'Not Found')
+                self.send_error(404, 'Server Not Found')
         else:
             # Handle invalid POST requests (404 Not Found)
             self.send_error(404, 'Not Found')
