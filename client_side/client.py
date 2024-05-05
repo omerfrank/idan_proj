@@ -60,8 +60,12 @@ class MyHandler(BaseHTTPRequestHandler):
         # Construct the absolute path to the requested file
         full_path = "client_side"
         try:
-            filetype = self.path.split('.')[1]# if self.path != '/' else 'html'
-            filename = self.path.split('.')[0]# if self.path != '/' else 'index'
+            if '.' in self.path:
+                filetype = self.path.split('.')[1]
+                filename = self.path.split('.')[0]
+            else:
+                filetype = 'html'
+                filename = 'iindex'
             if filetype in ["jpg", "gif"]:
                 content_type = "image/jpeg"
             elif filetype == "html":
@@ -94,6 +98,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_error(404, 'File not found')
         except Exception as e:
             # Handle other potential errors
+            print('here')
             print(f"Error serving file: {e}")
             self.send_error(500, 'Internal Server Error')
 
