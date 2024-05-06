@@ -23,16 +23,26 @@ class ServerHandler:
         client.close()
         return 'ok'
     def checkSite(self,site):
+        print("start the cheking proses \n")
         client = socket.socket()
         try:
             client.connect((f'{self.serverIP}', 1729))
+            print("connected to server \n")
         except:
             return '404 server not found'
         client.sendall('check'.encode())
-        publicKey = pickle.loads(client.recv(1024))
+        print("ping server \n ")
+        try:
+            publicKey = pickle.loads(client.recv(2048))
+        except pickle.PicklingError as e:
+            print(e)
+        print(f'gaoned publicKey:  \n')
         encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
-        client.sendall(f"{encodedMes }".encode())
-        response = client.recv(1024).decode()
+        print("encoded the messege seccufuly \n")
+        client.sendall(encodedMes)
+        print("sended new messege \n ")
+        print(type(encodedMes) )
+        response = client.recv(2048).decode()
         if response == 'Good':
             try:
                 webbrowser.open(f'http://{site}')
@@ -119,23 +129,23 @@ class MyHandler(BaseHTTPRequestHandler):
             print(f"Received text: {submitted_text}")
 
             # Send a simple response (you can customize this)
-            try:
-                response = self.server.ServerHandel.checkSite(submitted_text)
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain')
-                self.end_headers()
-                if response == 1:
-                    self.wfile.write(f"the web page {submitted_text} is ok".encode())
-                elif response == -1:
-                    self.wfile.write(f"the web page {submitted_text} is not safe, and probebly contain malwer. \n enter at your own risk".encode())
-                elif response == '404 server not found':
-                    self.send_error(404, 'Server Not Found.\n try insert ip agin')
-                elif response == '404 not found':
-                    self.send_error(404, 'Web page Not Found.\n try insert name agin')
-                elif response == 'unknown':
-                    self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk".encode())
+            #try:
+            response = self.server.ServerHandel.checkSite(submitted_text)
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            if response == 1:
+                self.wfile.write(f"the web page {submitted_text} is ok".encode())
+            elif response == -1:
+                self.wfile.write(f"the web page {submitted_text} is not safe, and probebly contain malwer. \n enter at your own risk".encode())
+            elif response == '404 server not found':
+                self.send_error(404, 'Server Not Found.\n try insert ip agin')
+            elif response == '404 not found':
+                self.send_error(404, 'Web page Not Found.\n try insert name agin')
+            elif response == 'unknown':
+                self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk".encode())
                     
-            except:
+            #except:
                 self.send_error(404, f'Server/web page Not Found, server ip {self.server.ServerHandel.serverIP}')
                 
         elif self.path == '/serverIP':
