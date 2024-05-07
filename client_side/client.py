@@ -35,7 +35,7 @@ class ServerHandler:
         try:
             publicKey = pickle.loads(client.recv(2048))
         except pickle.PicklingError as e:
-            print(e)
+            return '109 comuunication error'
         print(f'gaoned publicKey:  \n')
         encodedMes = rsa.encrypt(message= bytes(site,'utf-8'),pub_key=publicKey)
         print("encoded the messege seccufuly \n")
@@ -135,18 +135,19 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'text/plain')
             self.end_headers()
             if response == 1:
-                self.wfile.write(f"the web page {submitted_text} is ok".encode())
+                self.wfile.write(f"the web page {submitted_text} is safe".encode())
             elif response == -1:
-                self.wfile.write(f"the web page {submitted_text} is not safe, and probebly contain malwer. \n enter at your own risk".encode())
+                self.wfile.write(f"the web page {submitted_text} is not safe, and contain malwer. \n enter at your own risk".encode())
             elif response == '404 server not found':
                 self.send_error(404, 'Server Not Found.\n try insert ip agin')
             elif response == '404 not found':
                 self.send_error(404, 'Web page Not Found.\n try insert name agin')
             elif response == 'unknown':
                 self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk".encode())
+            elif response == '109 comuunication error':
+                self.send_error(109, 'communication with server error. \n please try agein')
                     
             #except:
-                self.send_error(404, f'Server/web page Not Found, server ip {self.server.ServerHandel.serverIP}')
                 
         elif self.path == '/serverIP':
             # Read the form data from POST request body

@@ -31,27 +31,27 @@ def handleClients(client):
         return 
     print("not sql injection \n")
     while True:
-        #try:
-        conn = sqlite3.connect(r'server side\\URL_database.db') 
-        print ("connected to DB \n")
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT isMal from Site where URL == '{url}'")
-        print('trying to fetch')
-        response = cursor.fetchone()
-        if response:
-            response = response[0]
-        else:
-            client.send("".encode())
+        try:
+            conn = sqlite3.connect(r'server side\\URL_database.db') 
+            print ("connected to DB \n")
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT isMal from Site where URL == '{url}'")
+            print('trying to fetch')
+            response = cursor.fetchone()
+            if response:
+                response = response[0]
+            else:
+                client.send("".encode())
+                client.close()
+                return
+            print(f"answer: {response}")
+            client.sendall(f'{response}'.encode())
+            print("sent answer")
+            #client.sendall('404 not found'.encode())
             client.close()
             return
-        print(f"answer: {response}")
-        client.sendall(f'{response}'.encode())
-        print("sent answer")
-        #client.sendall('404 not found'.encode())
-        #client.close()
-        return
-        #except:
-            #time.sleep(0.2)
+        except:
+            time.sleep(0.2)
 
     
 while True:
