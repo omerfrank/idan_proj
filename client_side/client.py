@@ -4,10 +4,6 @@ import socket
 import rsa
 import pickle
 from bleach import clean
-import tkinter as tk
-import threading
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QListWidget, QPushButton
-from PyQt5.QtCore import QSize
 def sanitize_html(user_input):
     tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
     attrs = {'a': ['href']}  # Allowed attributes for 'a' tag
@@ -235,7 +231,6 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.send_error(404, 'Server Not Found')
         elif response == '/history':
             self.send_response(200)
-            #self.server.history.ShowHis()
             self.send_header('Content-Type', 'text/html; charset=UTF-8')
             self.end_headers()
             self.wfile.write(self.server.history.ShowHis().encode())
