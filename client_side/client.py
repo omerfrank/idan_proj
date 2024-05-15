@@ -1,17 +1,64 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import os
 import webbrowser
 import socket
 import rsa
 import pickle
 from bleach import clean
-
+import tkinter as tk
+import threading
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QListWidget, QPushButton
+from PyQt5.QtCore import QSize
 def sanitize_html(user_input):
     tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
     attrs = {'a': ['href']}  # Allowed attributes for 'a' tag
     return clean(user_input, tags=tags, attributes=attrs, strip=True)
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
+
+class History:
+    def __init__(self) -> None:
+        self.journal = []
+    def ShowHis(self):
+        html_content =  html_content = """<!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <title>Browsing History</title>
+        <style>
+            body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            }
+
+            ul {
+            list-style-type: disc;
+            margin: 0;
+            padding: 0;
+            }
+
+            li {
+            margin-bottom: 10px;
+            }
+        </style>
+        </head>
+        <body>
+        <h1>Your Browsing History</h1>
+        <ul>
+        """
+
+        for item in self.journal:
+            html_content += f"    <li>{item}</li>\n"
+
+        html_content += """
+        </ul>
+        </body>
+        </html>
+        """
+        return html_content
+    def AddUrl(self,url):
+        self.journal.append(url)        
 class ServerHandler:
     def __init__(self,serverIP):
         self.serverIP = serverIP
@@ -63,6 +110,7 @@ class MyHandler(BaseHTTPRequestHandler):
     """
     Custom handler for handling HTTP requests.
     """
+    
     def do_GET(self):
         """
         Handles GET requests (serving static files).
@@ -129,7 +177,11 @@ class MyHandler(BaseHTTPRequestHandler):
             # Extract the submitted text from form data
             form_data = dict(item.split('=') for item in post_data.split('&'))
             submitted_text = form_data.get('text')
-
+            try:
+                self.server.history.AddUrl(submitted_text)
+            except:
+                self.server.history = History()
+                self.server.history.AddUrl(submitted_text)
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
             submitted_text = sanitize_html(submitted_text)
@@ -181,6 +233,13 @@ class MyHandler(BaseHTTPRequestHandler):
                     self.send_error(404, 'Server Not Found')
             except:
                 self.send_error(404, 'Server Not Found')
+        elif response == '/history':
+            self.send_response(200)
+            #self.server.history.ShowHis()
+            self.send_header('Content-Type', 'text/html; charset=UTF-8')
+            self.end_headers()
+            self.wfile.write(self.server.history.ShowHis().encode())
+            
         else:
             # Handle invalid POST requests (404 Not Found)
             self.send_error(404, 'Not Found')
