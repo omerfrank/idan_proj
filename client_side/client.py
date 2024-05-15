@@ -4,8 +4,12 @@ import webbrowser
 import socket
 import rsa
 import pickle
+from bleach import clean
 
-
+def sanitize_html(user_input):
+    tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
+    attrs = {'a': ['href']}  # Allowed attributes for 'a' tag
+    return clean(user_input, tags=tags, attributes=attrs, strip=True)
 # Define the directory containing static files (HTML, CSS, etc.)
 STATIC_DIR = 'static'
 class ServerHandler:
@@ -63,7 +67,7 @@ class MyHandler(BaseHTTPRequestHandler):
         """
         Handles GET requests (serving static files).
         """
-        requested_url = self.path
+        requested_url = sanitize_html(self.path)
         print(f"\n requested_url: {requested_url} \n")
         #if requested_url == '/':
 
@@ -116,7 +120,8 @@ class MyHandler(BaseHTTPRequestHandler):
         """
         Handles POST requests (form submission).
         """
-        if self.path == '/submit':
+        requested_url = sanitize_html(self.path)
+        if requested_url == '/submit':
             # Read the form data from POST request body
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length).decode()
@@ -149,7 +154,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     
             #except:
                 
-        elif self.path == '/serverIP':
+        elif requested_url == '/serverIP':
             # Read the form data from POST request body
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length).decode()

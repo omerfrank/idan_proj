@@ -32,10 +32,11 @@ def find_solutions():
             for b in range(10):
               for o in range(10):
                 for y in range(10):
-                  if check_unique_digits(f"{d},{g},{l},{s},{o},{b},{r},{y}"):  # Combined string for efficiency
+                    arr = [d,g,l,s,o,b,r,y]  # Combined string for efficiency
+                    check_unique_digits(arr)
                     print ("unic")
                     gorT = int(f'{r}{o}{g}')
-                    gor2 = int(f'{l}{g}{d}') * int(f'{l}{g}{d}')
+                    gor2 = int(f'{l}{g}{d}') * int(f'{l}{g}')
                     gbisT = int(f'{s}{y}{b}{g}')
                     gbis2 = int(f'{g}{b}{l}') + gorT
                     if gor2 == gorT or gbis2 == gbisT:
