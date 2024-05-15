@@ -177,6 +177,7 @@ class MyHandler(BaseHTTPRequestHandler):
             # Extract the submitted text from form data
             form_data = dict(item.split('=') for item in post_data.split('&'))
             submitted_text = form_data.get('text')
+            submitted_text = sanitize_html(submitted_text)
             try:
                 self.server.history.AddUrl(submitted_text)
             except:
@@ -184,7 +185,6 @@ class MyHandler(BaseHTTPRequestHandler):
                 self.server.history.AddUrl(submitted_text)
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
-            submitted_text = sanitize_html(submitted_text)
 
             # Send a simple response (you can customize this)
             #try:
