@@ -40,6 +40,7 @@ def handleClients(client):
             response = cursor.fetchone()
             if response:
                 response = response[0]
+                print (response)
             else:
                 client.send("".encode())
                 client.close()

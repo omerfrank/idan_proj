@@ -120,8 +120,8 @@ class MyHandler(BaseHTTPRequestHandler):
         """
         Handles POST requests (form submission).
         """
-        requested_url = sanitize_html(self.path)
-        if requested_url == '/submit':
+        response = self.path
+        if response == '/submit':
             # Read the form data from POST request body
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length).decode()
@@ -132,6 +132,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
+            submitted_text = sanitize_html(submitted_text)
 
             # Send a simple response (you can customize this)
             #try:
@@ -154,7 +155,7 @@ class MyHandler(BaseHTTPRequestHandler):
                     
             #except:
                 
-        elif requested_url == '/serverIP':
+        elif response == '/serverIP':
             # Read the form data from POST request body
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length).decode()
@@ -162,6 +163,7 @@ class MyHandler(BaseHTTPRequestHandler):
             # Extract the submitted text from form data
             form_data = dict(item.split('=') for item in post_data.split('&'))
             submitted_text = form_data.get('text')
+            submitted_text = sanitize_html(submitted_text)
 
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
