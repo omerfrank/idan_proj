@@ -196,7 +196,9 @@ class MyHandler(BaseHTTPRequestHandler):
             elif response == '109 comuunication error':
                 self.send_error(109, 'communication with server error. \n please try agein')
             else:
-                self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk \n  {response[2:]}?".encode())
+                
+                self.wfile.write(f"the web page {submitted_text} is unkwon. \n enter at your own risk \n  {response}".encode())
+
                     
             #except:
                 
