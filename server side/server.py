@@ -463,8 +463,6 @@ def handleClients(client):
         except:
             time.sleep(0.2)
 
-t = threading.Thread(target=menangeServer)
-t.start()
 print("thread start")    
 while True:
     rlist, wlist, xlist = select.select([server]+clients, clients, [])
