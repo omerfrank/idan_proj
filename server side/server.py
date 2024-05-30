@@ -15,13 +15,15 @@ import ipaddress
 import datetime
 import whois
 
-def get_domain(url):  
+def get_domain(url):
+    "remove www from the url"  
     domain = urlparse(url).netloc
     if re.match(r"^www.",domain):
         domain = domain.replace("www.","")
     return domain
 
 def having_ip(url):
+    'check if the url have legal ip'
     try:
         ipaddress.ip_address(url)
         ip = 1
@@ -30,6 +32,7 @@ def having_ip(url):
     return ip
 
 def have_at_sign(url):
+    """check and returns wether or not the url contain the '@' sign"""
     if "@" or '%40' in url:
         at = 1
     else:
@@ -37,6 +40,7 @@ def have_at_sign(url):
     return at
 
 def get_length(url):
+    """check and returns is it suspitiosly long?"""
     if len(f'https:{url}') < 54:
         length = 0
     else:
@@ -44,6 +48,7 @@ def get_length(url):
     return length
 
 def get_depth(url):
+    """check and returns how many subfolders in url"""
     s = urlparse(url).path.split('/')
     depth = 0
     for j in range(len(s)):
@@ -52,6 +57,7 @@ def get_depth(url):
     return depth
 
 def redirection(url):
+    """check and returns where it redirect for the first time """
     newrl = 'http://' + url if 'http:/' or 'https:/' not in url else url
     pos = newrl.rfind('//')
     if pos > 6:
@@ -63,6 +69,7 @@ def redirection(url):
         return 0
 
 def http_domain(url):
+    """check and returns if it is https or not"""
     domain = urlparse(url).netloc
     if 'https' in domain:
         return 1
@@ -70,6 +77,7 @@ def http_domain(url):
         return 0
 
 def tiny_url(url):
+    """check and returns if it uses shortening survises"""
     shortening_services = r"bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|" \
                           r"yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|" \
                           r"short\.to|BudURL\.com|ping\.fm|post\.ly|Just\.as|bkite\.com|snipr\.com|fic\.kr|loopt\.us|" \
@@ -85,11 +93,13 @@ def tiny_url(url):
         return 0
 
 def prefix_suffix(url):
+    """check and returns if the url contain the '-' sign"""
     if '-' in urlparse(url).netloc:
         return 1
     else:
         return 0 
 def domainEnd(domain_name):
+  """check and returns when the domain will expire"""
   expiration_date = domain_name.expiration_date
   if isinstance(expiration_date,str):
     try:
@@ -112,8 +122,8 @@ def domainEnd(domain_name):
       print(1)
       end = 1
   return end
-# 13.Survival time of domain: The difference between termination time and creation time (Domain_Age)  
 def domainAge(domain_name):
+  """ check and returns The difference between termination time and creation time (Domain_Age)"""  
   creation_date = domain_name.creation_date
   expiration_date = domain_name.expiration_date
   if (isinstance(creation_date,str) or isinstance(expiration_date,str)):
@@ -138,6 +148,7 @@ def domainAge(domain_name):
   print(age)
   return age
 def web_traffic(url):
+    """check and returns how many times the url is entered"""
     try:
         querystring = {"domain": get_domain(url)}
         headers = {
@@ -160,6 +171,7 @@ def web_traffic(url):
         return 0
 
 def iframe(response):
+    """check and returns if the js of the url contin iframs"""
     if response == "":
         return 1
     else:
@@ -169,6 +181,7 @@ def iframe(response):
             return 1
 
 def mouse_over(response): 
+    """check and returns if there is a function that trigger when the mouse hover on a part of the screen"""
     if response == "" :
         return 1
     else:
@@ -178,6 +191,7 @@ def mouse_over(response):
             return 0
 
 def right_click(response):
+    """check and returns if there is a function that trigger when right click in the js"""
     if response == "":
         return 1
     else:
@@ -187,6 +201,7 @@ def right_click(response):
             return 1
 
 def forwarding(response):
+    """check and returns if the url tirectly riderect to a diffrent page"""
     if response == "":
         return 1
     else:
@@ -196,6 +211,7 @@ def forwarding(response):
             return 1
 
 def get_http_response(url):
+    """check and returns if the website answer to a get requst"""
     try:
         response = requests.get(url, timeout=5)  # Set a timeout of 5 seconds
         return response
@@ -203,6 +219,7 @@ def get_http_response(url):
         return None
 
 def extract_features(url):
+    """get a url, extract and return all of is feature """
     features = []
     
     # Address bar based features
@@ -254,6 +271,7 @@ def extract_features(url):
     return features
 
 def predict_phishing(features):
+    """return wether or not the ai think the url is phishing or not"""
     # Load the model
     with open('server side\XGBoostClassifier.pickle.dat', 'rb') as file:
         loaded_model = pickle.load(file)
@@ -265,6 +283,7 @@ def predict_phishing(features):
     return prediction
 
 def read_corpus(filename):
+    """read the list of correct words"""
     print('try to poen')
     try:
         with open(r'server side\autoCorrect.txt', 'r') as f:
