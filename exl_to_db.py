@@ -2,7 +2,7 @@ import pandas as pd
 import sqlite3
 
 # Define Excel file path and sheet name
-excel_file = r"C:\Users\omerf\Downloads\sitedatabase.xlsx"
+excel_file = input("where is yout exl sheet? ")
 sheet_name = "Sheet1"  # Update sheet name if needed
 
 # Connect to the database (replace 'your_database.db' with your filename)
