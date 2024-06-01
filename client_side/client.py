@@ -15,6 +15,7 @@ class History:
     def __init__(self) -> None:
         self.journal = []
     def ShowHis(self):
+        #create html contet of the history of the client
         html_content =  html_content = """<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -60,6 +61,7 @@ class ServerHandler:
         self.serverIP = serverIP
         print("init ----")
     def checkServer(self):
+        # check if the server is alive
         client = socket.socket()
         try:
             client.connect((f'{self.serverIP}', 1729))
@@ -70,6 +72,7 @@ class ServerHandler:
         client.close()
         return 'ok'
     def checkSite(self,site):
+        #check with server for if a given url is phishing or not
         print("start the cheking proses \n")
         client = socket.socket()
         try:

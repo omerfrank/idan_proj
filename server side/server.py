@@ -389,40 +389,20 @@ print("bound on: " + socket.gethostbyname(socket.gethostname()))
 server.listen()
 clients = []
 messages=[]
-def menangeServer():
-    while True:
-        requst = input("what do you want to add?")
-        addToDb(site=requst)
         
-        
-def addToDb(site):
-    if checkURL(site): 
-        print ('Error inserting ' + site)
-        return
-    while True:
-        try:
-            conn = sqlite3.connect(r'server side\\URL_database.db') 
-            print ("connected to DB \n")
-            cursor = conn.cursor()
-            Classification = input("Good or Mal? ")
-            print(Classification)
-            while (Classification != 'Good' and Classification !='Mal'):
-                Classification = input("Good or Mal? ")
-            print("passed while")
-            insert_query = 'INSERT INTO Site(URL, IsMal) VALUES (?, ?)'
-            cursor.execute(insert_query, (site, Classification))
-            cursor.close()
-            return
-        except:
-            time.sleep(0.2)
+
             
 def checkURL(url):
+    """get url, return if include sql phrases"""
     injection_keywords = ['SELECT', 'UPDATE', 'DELETE', 'INSERT', '--', ';']
     for keyword in injection_keywords:
         if keyword.lower() in url.lower():
             return True
     return False
 def handleClients(client):
+    """מנהל את התקשורת בין שרת ללקוח
+    לא מחזיר פלט
+    """
     Keys = rsa.newkeys(1024)
     publicKey = Keys[0]
     privateKey = Keys[1]
