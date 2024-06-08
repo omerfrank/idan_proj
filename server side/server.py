@@ -554,7 +554,7 @@ def main():
     main_window.configure(fg_color='lightblue')  # Set background color
     
     # Resize the logo image
-    original_image = Image.open(r"C:\Users\omerf\OneDrive\שולחן העבודה\idan_proj\FishLogo2.png")
+    original_image = Image.open(r"FishLogo2.png")
     image_width, image_height = original_image.size
     # Resize image to fit within 400x300 while maintaining aspect ratio
     max_width, max_height = 400, 300
