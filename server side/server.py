@@ -15,6 +15,7 @@ import ipaddress
 import datetime
 import whois
 import os
+import tkinter as tk
 #server backend
 def get_domain(url):
     "remove www from the url"  
@@ -394,10 +395,11 @@ def checkURL(url):
         if keyword.lower() in url.lower():
             return True
     return False
-def handleClients(client):
+def handleClients(client,address):
     """מנהל את התקשורת בין שרת ללקוח
     לא מחזיר פלט
     """
+    client_ip, client_port = address
     Keys = rsa.newkeys(1024)
     publicKey = Keys[0]
     privateKey = Keys[1]
@@ -407,6 +409,7 @@ def handleClients(client):
     url = rsa.decrypt(client.recv(2048) ,privateKey).decode()
     print(url + "\n")
     if checkURL(url):
+        arr.append(f'{client_ip} , Mal , {url}')
         client.sendall('Mal')
         return 
     print("not sql injection \n")
@@ -432,26 +435,13 @@ def handleClients(client):
                     perd = "The AI classified This URL as to be safe."
                 mes = f'{findCloseWords(url)}? \n\n {perd} \n '
                 print(mes)
+                arr.append(f'{client_ip} , UN , {url}')
                 client.sendall(mes.encode())
                 client.close()
                 return
             print(f"answer: {response}")
-            if response == 'Good':
-                client.sendall(f'{response}'.encode())
-            else:
-                features = extract_features(url)
-                # Make prediction
-                prediction = predict_phishing(features)
-                perd = ''
-                if prediction[0] == 1:
-                    perd = "The AI classified This URL as phishing."
-                else:
-                    perd = "The AI classified This URL as to be safe."
-                mes = f'{response}{findCloseWords(url)}? \n {perd} \n Full dignosis: {features}'
-                print(mes)
-                client.sendall(mes.encode())
-            print("sent answer")
-            #client.sendall('404 not found'.encode())
+            client.sendall(f'{response}'.encode())
+            arr.append(f'{client_ip} , {response} , {url}')
             client.close()
             return
         except:
@@ -490,24 +480,11 @@ class BackEnd:
                             c.close()
                         else:
                             print("start a new thread")
-                            t = threading.Thread(target=handleClients,args=[c])
+                            t = threading.Thread(target=handleClients,args=[c,address])
                             t.start() 
                     except:
                         print('problem connecting')
 
-    def handleClients(self, client_socket):
-        """Handle client communication in a separate thread."""
-        while True:
-            try:
-                message = client_socket.recv(1024)
-                if message:
-                    print(f"Client says: {message.decode()}")
-                else:
-                    break
-            except ConnectionResetError:
-                print("Client forcibly closed the connection")
-                break
-        client_socket.close()
 
 def start_server():
     """Starts the server in a separate thread."""
@@ -519,60 +496,57 @@ def start_server():
     messagebox.showinfo("Server", f"Server started successfully!\nServer bound on {server.ip}\n ip copied to clipbord")
 
 def open_updates():
-    """Opens the updates window with client request list and filtering options."""
-    updates_window = ctk.CTkToplevel(main_window)
-    updates_window.title("Updates")
-    updates_window.geometry("500x400")
-    
-    # Add 'Client Requests' list box
-    client_request_label = ctk.CTkLabel(updates_window, text="Client Requests", pady=10)
-    client_request_label.pack(pady=5)
-    
-    client_request_listbox = Listbox(updates_window, height=10, width=50, font=TkFont.Font(size=12))
-    client_request_listbox.pack(pady=5)
-    
-    # Populate listbox with sample data (for demonstration)
-    sample_data = [
-        "Request 1: Potential phishing attempt",
-        "Request 2: Safe",
-        "Request 3: Phishing attempt detected",
-        "Request 4: Safe",
-        "Request 5: Safe",
-        "Request 6: Phishing attempt detected"
-    ]
-    for item in sample_data:
-        client_request_listbox.insert(END, item)
-    
-    # Add 'Show Only Phishing Attempts' checkbox
-    show_phishing_var = ctk.StringVar(value="off")
-    show_phishing_checkbox = ctk.CTkCheckBox(
-        updates_window,
-        text="Show Only Phishing Attempts",
-        variable=show_phishing_var,
-        onvalue="on",
-        offvalue="off",
-        command=lambda: filter_requests(show_phishing_var.get(), client_request_listbox, sample_data)
-    )
-    show_phishing_checkbox.pack(pady=10)
-    
-    # Add 'Back' button to return to main window
-    back_button = ctk.CTkButton(updates_window, text="Back", command=updates_window.destroy, corner_radius=10, fg_color='#E53935', text_color='white')
-    back_button.pack(pady=10)
+  """Opens the updates window with client request list and filtering options."""
+  updates_window = ctk.CTkToplevel(main_window)
+  updates_window.title("Updates")
+  updates_window.geometry("500x400")
 
-def filter_requests(show_phishing, listbox, data):
+  # Add 'Client Requests' label with fixed height
+  client_request_label = ctk.CTkLabel(updates_window, text="Client Requests", pady=10)
+  client_request_label.pack(pady=5, fill=tk.X)  # Stretch horizontally
+
+  # Add 'Client Requests' listbox with fixed width and height
+  client_request_listbox = Listbox(updates_window, height=10, width=30, font=TkFont.Font(size=20))
+  client_request_listbox.pack(fill=tk.BOTH, expand=True)  # Fill remaining space
+
+  for item in arr:
+      client_request_listbox.insert(END, item)
+
+  # Add 'Show Only Phishing Attempts' checkbox with fixed width
+  show_phishing_var = ctk.StringVar(value="off")
+  show_phishing_checkbox = ctk.CTkCheckBox(
+      updates_window,
+      text="Show Only Phishing Attempts",
+      variable=show_phishing_var,
+      onvalue="on",
+      offvalue="off",
+      command=lambda: filter_requests(show_phishing_var.get(), client_request_listbox),
+      width=300  # Set fixed width for checkbox
+  )
+  show_phishing_checkbox.pack(pady=10, fill=tk.X)  # Stretch horizontally
+
+  # Add 'Back' button with fixed size and color
+  back_button = ctk.CTkButton(updates_window, text="Back", command=updates_window.destroy, corner_radius=10, fg_color='#E53935', text_color='white', width=100, height=30)
+  back_button.pack(pady=10)
+
+
+
+def filter_requests(show_phishing, listbox):
     """Filters the listbox items based on phishing attempts."""
     listbox.delete(0, END)
     if show_phishing == "on":
-        filtered_data = [item for item in data if "Phishing attempt detected" in item]
+        filtered_data = [item for item in arr if "Mal" in item]
+        filtered_data.extend([item for item in arr if "UN" in item])
     else:
-        filtered_data = data
+        filtered_data = arr
     for item in filtered_data:
         listbox.insert(END, item)
 
 def main():
     """Main function to initialize and run the GUI application."""
     global main_window  # Declare main_window as global to be accessible in other functions
-    
+    global arr 
+    arr = []
     # Create the main window
     main_window = ctk.CTk()
     main_window.title("Fishgurd Application")
