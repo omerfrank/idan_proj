@@ -8,7 +8,10 @@ packages = [
     'numpy',
     'requests',
     'whois',
-    'xgboost==2.0.3'
+    'xgboost==2.0.3',
+    'customtkinter',
+    'pillow',
+    'tk'
 ]
 
 def install(package):

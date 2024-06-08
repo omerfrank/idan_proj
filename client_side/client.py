@@ -3,6 +3,7 @@ import webbrowser
 import socket
 import rsa
 import pickle
+import tkinter
 from bleach import clean
 def sanitize_html(user_input):
     tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
