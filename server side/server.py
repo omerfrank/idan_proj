@@ -425,14 +425,17 @@ def handleClients(client,address):
                 response = response[0]
                 print (response)
             else:
-                features = extract_features(url)
-                # Make prediction
-                prediction = predict_phishing(features)
-                perd = ''
-                if prediction[0] == 1:
-                    perd = "The AI classified This URL as phishing."
+                if enable_fast_search_switch.get() == 'on':
+                    features = extract_features(url)
+                    # Make prediction
+                    prediction = predict_phishing(features)
+                    perd = ''
+                    if prediction[0] == 1:
+                        perd = "The AI classified This URL as phishing."
+                    else:
+                        perd = "The AI classified This URL as to be safe."
                 else:
-                    perd = "The AI classified This URL as to be safe."
+                    perd = ''
                 mes = f'{findCloseWords(url)}? \n\n {perd} \n '
                 print(mes)
                 arr.append(f'{client_ip} , UN , {url}')
@@ -455,7 +458,6 @@ import select
 import tkinter.font as TkFont
 import socket
 import pyperclip
-
 class BackEnd:
     def __init__(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -541,6 +543,13 @@ def filter_requests(show_phishing, listbox):
         filtered_data = arr
     for item in filtered_data:
         listbox.insert(END, item)
+def eanableFastSearch():
+    print(fast_search)
+    if fast_search == 0:
+        fast_search =1
+        return
+    fast_search = 0
+    return
 
 def main():
     """Main function to initialize and run the GUI application."""
@@ -582,6 +591,11 @@ def main():
     # Add "View Server Log" button
     updates_button = ctk.CTkButton(main_window, text="View Server Log", command=open_updates, corner_radius=10, fg_color='#2196F3', text_color='white')
     updates_button.pack(pady=10)
+    # Add "Enable Fast Search" switch
+    global enable_fast_search_switch
+    enable_fast_search_switch = ctk.CTkSwitch(main_window, text="Enable Fast Search",onvalue="off", offvalue="on",text_color = 'darkblue',font=('Arial', 16))
+    enable_fast_search_switch.place(relx=0.01, rely=0.95, anchor='w')
+
     
     # Run the application
     main_window.mainloop()
