@@ -4,6 +4,7 @@ import socket
 import rsa
 import pickle
 import tkinter
+import re
 from bleach import clean
 def sanitize_html(user_input):
     tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
@@ -291,6 +292,9 @@ class MyHandler(BaseHTTPRequestHandler):
             # Process the submitted text (e.g., print it)
             print(f"Received text: {submitted_text}")
             try:
+                if re.fullmatch(pattern='^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$',string=submitted_text) == None:
+                    self.send_error(422,'not a legal ip')
+                    return
                 #self.ServerHandel = ServerHandler(submitted_text)
                 self.server.ServerHandel = ServerHandler(submitted_text)
                 print ("xxxxxx \n " + self.server.ServerHandel.serverIP)
