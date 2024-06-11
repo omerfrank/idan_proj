@@ -14,7 +14,6 @@ import re
 import ipaddress
 import datetime
 import whois
-import os
 import tkinter as tk
 #server backend
 def get_domain(url):
@@ -410,7 +409,7 @@ def handleClients(client,address):
     print(url + "\n")
     if checkURL(url):
         arr.append(f'{client_ip} , Mal , {url}')
-        client.sendall('Mal')
+        client.sendall('Mal'.encode())
         return 
     print("not sql injection \n")
     while True:

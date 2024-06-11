@@ -255,16 +255,16 @@ class MyHandler(BaseHTTPRequestHandler):
             #try:
             response = self.server.ServerHandel.checkSite(submitted_text)
             self.send_response(200)
-            if 'Mal' in response:
+            if response == 1:
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(f"the web page {submitted_text} is safe".encode())
+            elif  'Mal' in response:
                 self.send_header('Content-Type', 'text/html,charset=UTF-8')
                 self.end_headers()
                 self.wfile.write(alertMessage(submitted_text).encode())
                 return
                 #self.wfile.write(f"the web page {submitted_text} is not safe, and contain malwer. DO NOT ENTER".encode())
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            if response == 1:
-                self.wfile.write(f"the web page {submitted_text} is safe".encode())
 
             elif response == '404 server not found':
                 self.send_error(404, 'Server Not Found.\n try insert ip agin')
