@@ -102,7 +102,74 @@ class ServerHandler:
                 return '404 site found'
         else:
             return response
-        
+def alertMessage(site):
+    html_text = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dangerous Website Warning</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('fishalert.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .warning-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            animation: flash 1s infinite alternate;
+        }
+        .warning-container h1 {
+            font-size: 2em;
+            margin: 0;
+            color: #ff4f4f;
+        }
+        .warning-container p {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .warning-container a {
+            color: #ff4f4f;
+            text-decoration: underline;
+        }
+        @keyframes flash {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .warning-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+            color: #ff4f4f;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-container">
+        <div class="warning-icon">⚠️</div>
+        <h1>Dangerous Website</h1>
+        <p>The web page <strong>'''+site+'''</strong> is not safe and contains malware. DO NOT ENTER.</p>
+        <p>For more information on staying safe online, visit 
+            <a href="https://www.staysafeonline.org/">StaySafeOnline.org</a>.
+        And continue to use fishguerd
+        </p>
+    </div>
+</body>
+</html>
+'''
+    return html_text        
 class MyHandler(BaseHTTPRequestHandler):
     """
     Custom handler for handling HTTP requests.
@@ -187,12 +254,17 @@ class MyHandler(BaseHTTPRequestHandler):
             #try:
             response = self.server.ServerHandel.checkSite(submitted_text)
             self.send_response(200)
+            if 'Mal' in response:
+                self.send_header('Content-Type', 'text/html,charset=UTF-8')
+                self.end_headers()
+                self.wfile.write(alertMessage(submitted_text).encode())
+                return
+                #self.wfile.write(f"the web page {submitted_text} is not safe, and contain malwer. DO NOT ENTER".encode())
             self.send_header('Content-Type', 'text/plain')
             self.end_headers()
             if response == 1:
                 self.wfile.write(f"the web page {submitted_text} is safe".encode())
-            elif len(response) >= 3 and response[:2] == 'Mal':
-                self.wfile.write(f"the web page {submitted_text} is not safe, and contain malwer.".encode())
+
             elif response == '404 server not found':
                 self.send_error(404, 'Server Not Found.\n try insert ip agin')
             elif response == '404 not found':

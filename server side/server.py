@@ -498,7 +498,7 @@ def start_server():
 def open_updates():
   """Opens the updates window with client request list and filtering options."""
   updates_window = ctk.CTkToplevel(main_window)
-  updates_window.title("Updates")
+  updates_window.title("View Server Log")
   updates_window.geometry("500x400")
 
   # Add 'Client Requests' label with fixed height
@@ -554,29 +554,33 @@ def main():
     main_window.configure(fg_color='lightblue')  # Set background color
     
     # Resize the logo image
-    original_image = Image.open(r"FishLogo2.png")
-    image_width, image_height = original_image.size
-    # Resize image to fit within 400x300 while maintaining aspect ratio
-    max_width, max_height = 400, 300
-    if image_width > max_width or image_height > max_height:
-        ratio = min(max_width / image_width, max_height / image_height)
-        new_size = (int(image_width * ratio), int(image_height * ratio))
-        resized_image = original_image.resize(new_size, Image.Resampling.LANCZOS)
-    else:
-        resized_image = original_image
-    
-    logo = ImageTk.PhotoImage(resized_image)
-    
-    # Add a logo
-    logo_label = ctk.CTkLabel(main_window, image=logo, padx=10, pady=10)
-    logo_label.pack(pady=20)
+    try:
+        original_image = Image.open(r"server side\FishLogo2.jpg")
+        image_width, image_height = original_image.size
+        # Resize image to fit within 400x300 while maintaining aspect ratio
+        max_width, max_height = 400, 300
+        if image_width > max_width or image_height > max_height:
+            ratio = min(max_width / image_width, max_height / image_height)
+            new_size = (int(image_width * ratio), int(image_height * ratio))
+            resized_image = original_image.resize(new_size, Image.Resampling.LANCZOS)
+        else:
+            resized_image = original_image
+        
+        logo = ImageTk.PhotoImage(resized_image)
+        
+        # Add a logo
+        logo_label = ctk.CTkLabel(main_window, image=logo, padx=10, pady=10,text='')
+        logo_label.pack(pady=20)
+    except:
+        logo_label = ctk.CTkLabel(main_window, padx=10, pady=10,text='fishguerd',font=TkFont.Font(size=20))
+        logo_label.pack(pady=20)
     
     # Add "Start Server" button
     start_server_button = ctk.CTkButton(main_window, text="Start Server", command=start_server, corner_radius=10, fg_color='#4CAF50', text_color='white')
     start_server_button.pack(pady=10)
     
-    # Add "Updates" button
-    updates_button = ctk.CTkButton(main_window, text="Updates", command=open_updates, corner_radius=10, fg_color='#2196F3', text_color='white')
+    # Add "View Server Log" button
+    updates_button = ctk.CTkButton(main_window, text="View Server Log", command=open_updates, corner_radius=10, fg_color='#2196F3', text_color='white')
     updates_button.pack(pady=10)
     
     # Run the application
