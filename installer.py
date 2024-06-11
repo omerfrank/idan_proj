@@ -11,7 +11,17 @@ packages = [
     'xgboost==2.0.3',
     'customtkinter',
     'pillow',
-    'tk'
+    'tk',
+    're,',
+    'collections',
+    'urllib',
+    'ipaddress',
+    'customtkinter',
+    'PIL',
+    'select',
+    'pyperclip'
+    
+    
 ]
 
 def install(package):
