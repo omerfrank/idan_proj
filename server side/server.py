@@ -15,6 +15,8 @@ import ipaddress
 import datetime
 import whois
 import tkinter as tk
+from pathlib import Path
+ROOT = str(Path(__file__).parent.resolve())
 #server backend
 def get_domain(url):
     "remove www from the url"  
@@ -274,7 +276,7 @@ def extract_features(url):
 def predict_phishing(features):
     """return wether or not the ai think the url is phishing or not"""
     # Load the model
-    with open('server side\XGBoostClassifier.pickle.dat', 'rb') as file:
+    with open(ROOT + '\XGBoostClassifier.pickle.dat', 'rb') as file:
         loaded_model = pickle.load(file)
 
     # Make predictions
@@ -287,13 +289,11 @@ def read_corpus(filename):
     """read the list of correct words"""
     print('try to poen')
     try:
-        with open(r'server side\autoCorrect.txt', 'r') as f:
+        with open(ROOT + '\autoCorrect.txt', 'r') as f:
             print('opend suc')
             return f.read().lower()
     except:
-            with open(r'autoCorrect.txt', 'r') as f:
-                print('opend suc')
-                return f.read().lower()
+            return ''
 def get_word_counts(text):
     """Returns a dictionary where keys are unique words and values are their counts."""
     word_counts = collections.Counter(text.split())
@@ -414,33 +414,39 @@ def handleClients(client,address):
     print("not sql injection \n")
     while True:
         try:
-            conn = sqlite3.connect(r'server side\\URL_database.db') 
+            conn = sqlite3.connect(ROOT + r'\\URL_database.db') 
             print ("connected to DB \n")
             cursor = conn.cursor()
             cursor.execute(f"SELECT isMal from Site where URL == '{url}'")
             print('trying to fetch')
             response = cursor.fetchone()
+            conn.close()
             if response:
                 response = response[0]
                 print (response)
             else:
-                if enable_fast_search_switch.get() == 'on':
-                    features = extract_features(url)
-                    # Make prediction
-                    prediction = predict_phishing(features)
-                    perd = ''
-                    if prediction[0] == 1:
-                        perd = "The AI classified This URL as phishing."
+                try:
+                    if enable_fast_search_switch.get() == 'on':
+                        features = extract_features(url)
+                        # Make prediction
+                        prediction = predict_phishing(features)
+                        perd = ''
+                        if prediction[0] == 1:
+                            perd = "The AI classified This URL as phishing."
+                        else:
+                            perd = "The AI classified This URL as to be safe."
                     else:
-                        perd = "The AI classified This URL as to be safe."
-                else:
-                    perd = ''
-                mes = f'{findCloseWords(url)}? \n\n {perd} \n '
-                print(mes)
-                arr.append(f'{client_ip} , UN , {url}')
-                client.sendall(mes.encode())
-                client.close()
-                return
+                        perd = ''
+                    mes = f'{findCloseWords(url)}? \n\n {perd} \n '
+                    print(mes)
+                    arr.append(f'{client_ip} , UN , {url}')
+                    client.sendall(mes.encode())
+                    client.close()
+                    return
+                except:
+                    client.sendall('problem with plan B'.encode())
+                    client.close()
+                    return
             print(f"answer: {response}")
             client.sendall(f'{response}'.encode())
             arr.append(f'{client_ip} , {response} , {url}')
@@ -563,7 +569,7 @@ def main():
     
     # Resize the logo image
     try:
-        original_image = Image.open(r"server side\FishLogo2.jpg")
+        original_image = Image.open(ROOT + r"\FishLogo2.jpg")
         image_width, image_height = original_image.size
         # Resize image to fit within 400x300 while maintaining aspect ratio
         max_width, max_height = 400, 300

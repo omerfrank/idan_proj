@@ -6,6 +6,8 @@ import pickle
 import tkinter
 import re
 from bleach import clean
+from pathlib import Path
+ROOT = str(Path(__file__).parent.resolve())
 def sanitize_html(user_input):
     tags = ['p', 'strong', 'em', 'a']  # Allowed HTML tags (customize as needed)
     attrs = {'a': ['href']}  # Allowed attributes for 'a' tag
@@ -185,7 +187,7 @@ class MyHandler(BaseHTTPRequestHandler):
         #if requested_url == '/':
 
         # Construct the absolute path to the requested file
-        full_path = "client_side"
+        full_path = ROOT
         try:
             if '.' in self.path:
                 filetype = self.path.split('.')[1]
